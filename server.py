@@ -7,10 +7,16 @@ app = Flask("Emotion Detector")
 def sent_detector():
     text_to_analyze = request.args.get('textToAnalyze')
     response = emotion_detector(text_to_analyze)
-    dominant_emotion = response.pop('dominant_emotion')
+    
+    if response['dominant_emotion'] is None:
+        return "Invalid text! Please try again!."
+    
+    dominant_emotion = response['dominant_emotion']
+    
     scores_list = []
-    for emotion, score in response.items():
-        scores_list.append(f"'{emotion}': {score}")
+    for emotion in ['anger', 'disgust', 'fear', 'joy', 'sadness']:
+        scores_list.append(f"'{emotion}': {response[emotion]}")
+    
     scores_string = ", ".join(scores_list[:-1]) + f" and {scores_list[-1]}"
 
     return f"For the given statement, the system response is {scores_string}. The dominant emotion is {dominant_emotion}."
